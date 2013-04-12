@@ -148,6 +148,8 @@ export class Parser {
      * @type {boolean}
      */
     this.strictMode_ = false;
+    this.wasStrict_ = false;
+    this.strictKeywords_ = 0;
 
     this.noLint = false;
     this.noLintChanged_ = false;
@@ -801,10 +803,16 @@ export class Parser {
    * @private
    */
   parseFunctionDeclarationTail_(start, isGenerator, name) {
+    var strictKeywordsStart = this.strictKeywords_;
     this.eat_(OPEN_PAREN);
     var formalParameterList = this.parseFormalParameterList_();
     this.eat_(CLOSE_PAREN);
+    var strictKeywordsEnd = this.strictKeywords_;
     var functionBody = this.parseFunctionBody_(isGenerator);
+    if (this.wasStrict_ && strictKeywordsEnd > strictKeywordsStart) {
+      this.wasStrict_ = this.strictMode_;
+      this.reportError_('strict keywords in formal parameter list.');
+    }
     return new FunctionDeclaration(this.getTreeLocation_(start), name,
                                    isGenerator, formalParameterList,
                                    functionBody);
@@ -905,6 +913,7 @@ export class Parser {
 
     var result = this.parseStatementList_(!strictMode);
 
+    this.wasStrict_ = this.strictMode_;
     this.strictMode_ = strictMode;
     this.allowYield_ = allowYield;
 
@@ -3559,6 +3568,7 @@ export class Parser {
       return token;
 
     if (token.isStrictKeyword()) {
+      this.strictKeywords_++;
       if (this.strictMode_) {
         this.reportReservedIdentifier_(token);
       } else {
