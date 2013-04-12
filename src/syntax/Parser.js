@@ -869,7 +869,7 @@ export class Parser {
     if (this.peekRest_(type)) {
       formals.push(this.parseRestParameter_());
     } else {
-      if (this.peekFormalParameter_(this.peekType_()))
+      if (this.peekFormalParameter_(this.peekToken_()))
         formals.push(this.parseFormalParameter_());
 
       while (this.eatIf_(COMMA)) {
@@ -884,8 +884,10 @@ export class Parser {
     return new FormalParameterList(this.getTreeLocation_(start), formals);
   }
 
-  peekFormalParameter_(type) {
-    return this.peekBindingElement_(type);
+  peekFormalParameter_(token) {
+    if (token.isStrictKeyword())
+      return !this.strictMode_;
+    return this.peekBindingElement_(token.type);
   }
 
   parseFormalParameter_(initializerAllowed = undefined) {
