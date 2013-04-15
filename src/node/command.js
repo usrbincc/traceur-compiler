@@ -15,16 +15,32 @@
 'use strict';
 
 var path = require('path');
-var flags;
+var Getopt = require('./getopt.js').Getopt;
+var flags = {
+  optsMap_: {},
+  opts: [],
+  option: function(opt, desc) {
+    var optinit, m;
+    var m = opt.match(/^--([\w\-]+)(?:\s+(\[[^\]]*\]|<[^>]*>))?$/);
+    var optinit = m[1] + (m[2] ? (m[2][0] === '[' ? '::' : ':') : '');
+    var optInf = [optinit, {o: opt, d: desc}];
+    this.optsMap_['--' + m[1]] = optInf;
+    this.opts.push([optinit, desc]);
+  },
+  on: function(opt, func) {
+    var optkey = '--' + opt;
+    this.optsMap_[optkey] = this.optsMap_[optkey] || {};
+    this.optsMap_[optkey].f = func;
+  },
+  emit: function(opt, val) {
+    var optInf = this.optsMap_['--' + opt];
+    if (optInf && optInf.f) {
+      optInf.f(val);
+    }
+  },
+  usage: function() {}
+};
 var cmdName = path.basename(process.argv[1]);
-try {
-  flags = new (require('commander').Command)(cmdName);
-} catch (ex) {
-  console.error('Commander.js is required for this to work. To install it ' +
-                'run:\n\n  npm install commander\n');
-  process.exit(1);
-}
-flags.setMaxListeners(100);
 
 var traceur = require('./traceur.js');
 
@@ -37,16 +53,18 @@ flags.on('sourcemap', function() {
 
 flags.option('--longhelp', 'Show all known options');
 flags.on('longhelp', function() {
-  flags.help();
+  flags.emit('help');
   process.exit();
 });
 
-flags.on('--help', function() {
+flags.option('--help', 'Show help');
+flags.on('help', function() {
   console.log('  Examples:');
   console.log('');
   console.log('    $ %s a.js', cmdName);
   console.log('    $ %s b.js c.js --out compiled.js', cmdName);
   console.log('');
+  process.exit(0);
 });
 
 traceur.options.addOptions(flags);
@@ -73,6 +91,7 @@ flags.optionHelp = function() {
  * @param {Array.<string>} argv
  * @return {Array.<string>}
  */
+/*
 function processArguments(argv) {
   // Preserve the original.
   argv = argv.slice();
@@ -128,16 +147,43 @@ function processArguments(argv) {
   }
   return argv;
 }
+*/
 
-var argv = processArguments(process.argv);
-flags.parse(argv);
+var argv = (process.argv);
+// flags.parse(argv);
 
-var includes = flags.args;
+var includes = [];
+var interpretMode = true;
+var g = new Getopt(flags.opts);
+loop:
+while (g.getopt(process.argv)) {
+  switch (g.opt) {
+    case '?':
+    case '!':
+    case ':':
+      console.error('%s error: %s', g.opt, g.optopt);
+      process.exit(1);
+    case '=':
+      if (interpretMode) {
+        includes = argv.slice(g.optind - 1);
+        argv.flags = argv.slice(2, g.optind - 1);
+        break loop;
+      }
+      includes.push(g.optarg);
+      break;
+    case 'out':
+      interpretMode = false;
+      // fall through
+    default:
+      flags[g.opt] = g.optarg || true;
+      flags.emit(g.opt, g.optarg);
+  }
+}
 
 if (!includes.length) {
   // TODO: Start trepl
   console.error('\n  Error: At least one input file is needed');
-  flags.help();
+  flags.emit('help');
   process.exit(1);
 }
 
