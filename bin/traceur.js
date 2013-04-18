@@ -19149,10 +19149,9 @@ var $___src_runtime_modules_js = (function() {
   var LOADING = 1;
   var LOADED = 2;
   var PARSED = 3;
-  var DEPS_LOADED = 4;
-  var TRANSFORMED = 5;
-  var COMPLETE = 6;
-  var ERROR = 7;
+  var TRANSFORMED = 4;
+  var COMPLETE = 5;
+  var ERROR = 6;
   var CodeUnit = function() {
     'use strict';
     var $CodeUnit = ($__createClassNoExtends)({
@@ -19408,10 +19407,12 @@ var $___src_runtime_modules_js = (function() {
           return url;
         }).bind(this));
         codeUnit.dependencies = resolvedUrls.map((function(url) {
-          return this.load(url);
+          return this.getCodeUnit(url);
         }).bind(this));
-        codeUnit.state = DEPS_LOADED;
-        if (this.areAll(DEPS_LOADED)) {
+        resolvedUrls.forEach((function(url) {
+          this.load(url);
+        }).bind(this));
+        if (this.areAll(PARSED)) {
           this.analyze();
           this.transform();
           this.evaluate();
