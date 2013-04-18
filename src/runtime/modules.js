@@ -394,16 +394,11 @@ class InternalLoader {
     var requireVisitor = new ModuleRequireVisitor(this.reporter);
     requireVisitor.visit(codeUnit.tree);
     var baseUrl = codeUnit.url;
-    var resolvedUrls = requireVisitor.requireUrls.map((url) => {
-      url = resolveUrl(baseUrl, url);
-      this.getCodeUnit(url);
-      return url;
+    codeUnit.dependencies = requireVisitor.requireUrls.map((url) => {
+      return this.getCodeUnit(resolveUrl(baseUrl, url));
     });
-    codeUnit.dependencies = resolvedUrls.map((url) => {
-      return this.getCodeUnit(url);
-    });
-    resolvedUrls.forEach((url) => {
-      this.load(url);
+    codeUnit.dependencies.forEach((dependency) => {
+      this.load(dependency.url);
     });
 
     if (this.areAll(PARSED)) {
