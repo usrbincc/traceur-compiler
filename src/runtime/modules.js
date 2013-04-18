@@ -445,9 +445,9 @@ class InternalLoader {
       var codeUnit = dependencies[i];
 
       // We should not have gotten here if not all are PARSED or larget.
-      traceur.assert(codeUnit.state >= PARSED);
+      traceur.assert(codeUnit.state >= DEPS_LOADED);
 
-      if (codeUnit.state == PARSED) {
+      if (codeUnit.state == DEPS_LOADED) {
         trees.push(codeUnit.tree);
         modules.push(codeUnit.moduleSymbol);
       }

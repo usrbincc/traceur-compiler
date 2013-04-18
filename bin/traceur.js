@@ -19480,8 +19480,8 @@ var $___src_runtime_modules_js = (function() {
         var modules = [];
         for (var i = 0; i < dependencies.length; i++) {
           var codeUnit = dependencies[i];
-          traceur.assert(codeUnit.state >= PARSED);
-          if (codeUnit.state == PARSED) {
+          traceur.assert(codeUnit.state >= DEPS_LOADED);
+          if (codeUnit.state == DEPS_LOADED) {
             trees.push(codeUnit.tree);
             modules.push(codeUnit.moduleSymbol);
           }
