@@ -69,9 +69,7 @@ Command.prototype = {
   optionFor: function(arg) {
     var g = this.Getopt(), m;
     if (m = arg.match(/^-([\w])|--([\w\-]+)$/)) {
-      var argkey = m[1] || m[2];
-      // HACK: use private getopt member.
-      return g.opts_[argkey] && g.opts_[argkey].data;
+      return g.optind = 1, g.getopt([0, arg]) && g.optdata;
     }
   },
   parse: function(argv) {
