@@ -54,6 +54,7 @@ function Command(cmdName) {
   this.args = [];
   this.options = [];
   this.g = null;
+  this.option('-h, --help', 'output usage information');
 }
 
 Command.prototype = {
@@ -74,7 +75,6 @@ Command.prototype = {
   },
   parse: function(argv) {
     this.cmdName = this.cmdName || path.basename(argv[1]);
-    // TODO: if no help added, add help here.
     var g = this.Getopt();
     while (g.getopt(argv)) {
       this.handle(g);
