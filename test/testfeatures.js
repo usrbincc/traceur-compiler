@@ -396,7 +396,7 @@ function updateProgress(testFunction, filePath, basePath) {
 var flags;
 var cmdName = path.basename(process.argv[1]);
 try {
-  flags = new (require('commander').Command)(cmdName);
+  flags = require('../src/node/getopt-commander.js');
 } catch (ex) {
   console.error('Commander.js is required for this to work. To install it ' +
                 'run:\n\n  npm install commander\n');
