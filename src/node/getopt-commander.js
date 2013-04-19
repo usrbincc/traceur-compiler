@@ -39,7 +39,8 @@ function Option(flags, description) {
 Option.prototype = {
   help: function(w) {
     var short = this.short && this.short + ',';
-    var long = this.long + (this.arghelp && ' ' + this.arghelp);
+    var argsep = this.arghelp[0] === '<' ? ' ' : '=';
+    var long = this.long + (this.arghelp && argsep + this.arghelp);
     if (!this.description)
       return columns('', 4, short, 4) + long;
     return columns('', 4, short, 4, long, w) + '  ' + this.description;
@@ -51,9 +52,7 @@ function Command(cmdName) {
   this.usageOpts = '';
   this.opts = [];
   this.args = [];
-  this.on('help', this.help.bind(this));
   this.options = [];
-  this.optionsMap = Object.create(null);
   this.g = null;
 }
 
@@ -68,7 +67,7 @@ Command.prototype = {
     }
   },
   optionFor: function(arg) {
-    var g = this.getGetopt(), m;
+    var g = this.Getopt(), m;
     if (m = arg.match(/^-([\w])|--([\w\-]+)$/)) {
       var argkey = m[1] || m[2];
       // HACK: use private getopt member.
@@ -77,27 +76,35 @@ Command.prototype = {
   },
   parse: function(argv) {
     this.cmdName = this.cmdName || path.basename(argv[1]);
-    // if no help added, add help here.
-    var g = this.getGetopt();
+    // TODO: if no help added, add help here.
+    var g = this.Getopt();
     while (g.getopt(argv)) {
-      switch (g.opt) {
-        case '?':
-        case ':':
-        case '!':
-          console.error('%s: %s', this.cmdName, g.message());
+      this.handle(g);
+    }
+  },
+
+  // getopt functions
+  Getopt: function() {
+    return this.g || (this.g = new Getopt(this.opts));
+  },
+  handle: function(g) {
+    switch (g.opt) {
+      case '?':
+      case ':':
+      case '!':
+        console.error('%s: %s', this.cmdName, g.message());
+        this.help();
+        process.exit(1);
+      case '=':
+        this.args.push(g.optarg);
+        break;
+      default:
+        if (g.opt === 'help') {
           this.help();
           process.exit(1);
-        case '=':
-          this.args.push(g.optarg);
-          break;
-        default:
-          if (g.opt === 'help') {
-            this.help();
-            process.exit(1);
-          }
-          this[g.opt] = g.optarg !== null ? g.optarg : true;
-          this.emit(g.opt);
-      }
+        }
+        this[g.opt] = g.optarg !== null ? g.optarg : true;
+        this.emit(g.opt);
     }
   },
 
@@ -108,9 +115,9 @@ Command.prototype = {
     this.emit('--help');
   },
   optionHelp: function() {
-    var maxLen = this.options.reduce(function(len, option) {
-      var testmax = option.long.length + (option.arghelp.length && option.arghelp.length + 1);
-      if (option.description && testmax > len) {
+    var maxLen = this.options.reduce(function(len, opt) {
+      var testmax = opt.long.length + !!opt.arghelp.length + opt.arghelp.length;
+      if (opt.description && testmax > len) {
         return testmax;
       }
       return len;
@@ -118,8 +125,8 @@ Command.prototype = {
     // clamp to 20
     maxLen = maxLen < 20 ? maxLen : 20;
     console.log('  Options:\n');
-    this.options.forEach(function(option) {
-      console.log('%s', option.help(maxLen));
+    this.options.forEach(function(opt) {
+      console.log(opt.help(maxLen));
     });
     console.log();
   },
