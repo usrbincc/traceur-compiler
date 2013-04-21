@@ -26,7 +26,5 @@ if (!data)
 // traceur is a module and thus frozen.
 module.exports = {
   __proto__: traceur,
-  require: function(path) {
-    return require('./require.js')(path);
-  }
+  require: require('./require.js')
 };

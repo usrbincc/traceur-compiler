@@ -15,7 +15,6 @@
 'use strict';
 
 var Module = require('module');
-var traceur = require('./traceur.js');
 var inlineAndCompileSync = require('./inline-module.js').inlineAndCompileSync;
 
 var TreeWriter = traceur.outputgeneration.TreeWriter;
