@@ -77,7 +77,7 @@ Command.prototype = {
     this.cmdName = this.cmdName || path.basename(argv[1]);
     var g = this.Getopt();
     while (g.getopt(argv)) {
-      this.handle(g);
+      this.handle(g, argv);
     }
   },
 
@@ -85,7 +85,7 @@ Command.prototype = {
   Getopt: function() {
     return this.g || (this.g = new Getopt(this.opts));
   },
-  handle: function(g) {
+  handle: function(g, argv) {
     switch (g.opt) {
       case '?':
       case ':':
@@ -94,6 +94,13 @@ Command.prototype = {
         this.help();
         process.exit(1);
       case '=':
+        if (g.optarg === '--') {
+          for (var i = g.optind; i < argv.length; i++) {
+            this.args.push(argv[i]);
+          }
+          g.optind = i;
+          break;
+        }
         this.args.push(g.optarg);
         break;
       default:
