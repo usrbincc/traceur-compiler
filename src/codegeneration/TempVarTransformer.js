@@ -14,6 +14,8 @@
 
 import {ParseTreeTransformer} from './ParseTreeTransformer.js';
 import {
+  FunctionDeclaration,
+  FunctionExpression,
   ModuleDefinition,
   Program
 } from '../syntax/trees/ParseTrees.js';
@@ -103,6 +105,32 @@ export class TempVarTransformer extends ParseTreeTransformer {
       return tree;
     }
     return new Program(tree.location, programElements);
+  }
+
+  transformFunctionDeclaration(tree) {
+    var name = this.transformAny(tree.name);
+    var formalParameterList = this.transformAny(tree.formalParameterList);
+    var functionBody = this.transformFunctionBody(tree.functionBody);
+    if (name === tree.name &&
+        formalParameterList === tree.formalParameterList &&
+        functionBody === tree.functionBody) {
+      return tree;
+    }
+    return new FunctionDeclaration(tree.location, name, tree.isGenerator,
+                                   formalParameterList, functionBody);
+  }
+
+  transformFunctionExpression(tree) {
+    var name = this.transformAny(tree.name);
+    var formalParameterList = this.transformAny(tree.formalParameterList);
+    var functionBody = this.transformFunctionBody(tree.functionBody);
+    if (name === tree.name &&
+        formalParameterList === tree.formalParameterList &&
+        functionBody === tree.functionBody) {
+      return tree;
+    }
+    return new FunctionExpression(tree.location, name, tree.isGenerator,
+                                  formalParameterList, functionBody);
   }
 
   transformFunctionBody(tree) {
