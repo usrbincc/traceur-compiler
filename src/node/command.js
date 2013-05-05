@@ -14,6 +14,8 @@
 
 'use strict';
 
+var Getopt = require('./getopt.js').Getopt;
+var sprintf = require('./fmt-util.js').sprintf;
 var path = require('path');
 var flags;
 var cmdName = path.basename(process.argv[1]);
@@ -28,7 +30,77 @@ flags.setMaxListeners(100);
 
 var traceur = require('./traceur.js');
 
-flags.option('--out <FILE>', 'Compile all input files into a single file');
+var opts = ['h', 'help', 'out:', 'longhelp'];
+
+var help = [
+  ['--help', 'Output usage information', '-h'],
+  ['--out <FILE>', 'Compile all input files into a single file' ],
+  ['--longhelp', 'Show all known options'],
+  ['--experimental', 'Turns on all experimental features'],
+  ['--source-maps', 'Generate source maps']
+];
+
+var longhelp1 = [];
+var longhelp2 = [];
+
+var descriptions = {
+  experimental: 'Turns on all experimental features',
+  sourceMaps: 'Generate source maps'
+};
+
+Object.keys(traceur.options).forEach(function(x) {
+  var usage = x in {
+    'experimental': true,
+    'debug': true,
+    'sourceMaps': true,
+    'freeVariableChecker': true,
+    'validate': true,
+    'strictSemicolons': true,
+    'unstarredGenerators': true,
+    'ignoreNolint': true
+  } ? '' : '=[true|false|parse]';
+  var dashed = x.replace(/([A-Z])/g, '-$1').toLowerCase();
+  opts.push([dashed + (usage ? '::' : ''), x]);
+  if (usage)
+    longhelp1.push(['--' + dashed, descriptions[x] || '']);
+  else if (!descriptions[x])
+    longhelp2.push(['--' + dashed, descriptions[x] || '']);
+});
+
+function printOpt(x) {
+  var ind = 2;
+  var w = 16;
+  var shortOpt = x[2] ? x[2] + ',' : '';
+  var s = sprintf('%*s%*s%*s', ind, '', -4, shortOpt, -w, x[0]);
+  if (x[1] && s.length > ind + 4 + w) {
+    s += sprintf('\n%*s  %s', ind + 4 + w, '', x[1]);
+  } else {
+    s += '  ' + x[1];
+  }
+  console.log(s);
+}
+
+console.log('main options:\n')
+help.forEach(printOpt);
+
+console.log();
+console.log('feature options:\n')
+longhelp1.forEach(printOpt);
+
+console.log();
+console.log('bool options:\n')
+longhelp2.forEach(printOpt);
+
+console.log(opts);
+
+var g = new Getopt(opts);
+while (g.getopt(process.argv)) {
+  if (g.optdata) {
+    console.log(g.optdata, traceur.options[g.optdata]);
+  }
+  console.log(g.message());
+}
+process.exit(0);
 
 flags.option('--sourcemap', 'Generate source maps');
 flags.on('sourcemap', function() {
