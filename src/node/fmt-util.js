@@ -43,6 +43,9 @@ function sprintf(fmt) {
   if (ai > a.length) {
     throw new Error('not enough arguments');
   }
+  if (ai < a.length) {
+    throw new Error('too many arguments');
+  }
   return s;
 }
 
