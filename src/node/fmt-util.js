@@ -27,7 +27,7 @@ function pad(s, w) {
 
 function sprintf(fmt) {
   var a = arguments, ai = 1;
-  return fmt.replace(/%[^%A-z]*[%A-z]/g, function(x) {
+  var s = fmt.replace(/%[^%A-z]*[%A-z]/g, function(x) {
     switch(x) {
       case '%%':
         return '%';
@@ -40,6 +40,10 @@ function sprintf(fmt) {
         throw new Error(sprintf('unknown conversion specification: \'%s\'', x));
     }
   });
+  if (ai > a.length) {
+    throw new Error('not enough arguments');
+  }
+  return s;
 }
 
 exports.pad = pad;
