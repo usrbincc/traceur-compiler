@@ -30,11 +30,11 @@ flags.setMaxListeners(100);
 
 var traceur = require('./traceur.js');
 
-var opts = ['h', 'help', 'out:', 'longhelp'];
+var opts = ['h', 'help', 'o:', 'out:', 'longhelp'];
 
 var help = [
   ['--help', 'Output usage information', '-h'],
-  ['--out <FILE>', 'Compile all input files into a single file' ],
+  ['--out <FILE>', 'Compile all input files into a single file', '-o'],
   ['--longhelp', 'Show all known options'],
   ['--experimental', 'Turns on all experimental features'],
   ['--source-maps', 'Generate source maps']
@@ -58,18 +58,18 @@ Object.keys(traceur.options).forEach(function(x) {
     'strictSemicolons': true,
     'unstarredGenerators': true,
     'ignoreNolint': true
-  } ? '' : '=[true|false|parse]';
+  } ? '' : '[=<true|false|parse>]';
   var dashed = x.replace(/([A-Z])/g, '-$1').toLowerCase();
   opts.push([dashed + (usage ? '::' : ''), x]);
   if (usage)
-    longhelp1.push(['--' + dashed, descriptions[x] || '']);
+    longhelp1.push(['--' + dashed, descriptions[x] || usage]);
   else if (!descriptions[x])
     longhelp2.push(['--' + dashed, descriptions[x] || '']);
 });
 
 function printOpt(x) {
   var ind = 2;
-  var w = 16;
+  var w = 20;
   var shortOpt = x[2] ? x[2] + ',' : '';
   var s = sprintf('%*s%*s%*s', ind, '', -4, shortOpt, -w, x[0]);
   if (x[1] && s.length > ind + 4 + w) {
