@@ -121,12 +121,12 @@ while (g.getopt(argv)) {
       printMainHelp();
       console.log();
       printExamples();
-      break loop;
+      process.exit(+errors);
     case 'longhelp':
       printLongHelp();
       console.log();
       printExamples();
-      break loop;
+      process.exit(+errors);
     case 'o':
     case 'out':
       interpretMode = false;
