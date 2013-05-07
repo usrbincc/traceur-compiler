@@ -32,7 +32,7 @@ var traceur = require('./traceur.js');
 
 var opts = ['h', 'help', 'o:', 'out:', 'longhelp'];
 
-var help = [
+var mainhelp = [
   ['--help', 'Output usage information', '-h'],
   ['--out <FILE>', 'Compile all input files into a single file', '-o'],
   ['--longhelp', 'Show all known options'],
@@ -40,31 +40,31 @@ var help = [
   ['--source-maps', 'Generate source maps']
 ];
 
-var longhelp1 = [];
-var longhelp2 = [];
+var boolopts = [
+  'debug',
+  'sourceMaps',
+  'freeVariableChecker',
+  'validate',
+  'strictSemicolons',
+  'unstarredGenerators',
+  'ignoreNolint'
+];
 
-var descriptions = {
-  experimental: 'Turns on all experimental features',
-  sourceMaps: 'Generate source maps'
-};
+function dashCase(s) {
+  return s.replace(/([A-Z])/g, '-$1').toLowerCase();
+}
 
-Object.keys(traceur.options).forEach(function(x) {
-  var usage = x in {
-    'experimental': true,
-    'debug': true,
-    'sourceMaps': true,
-    'freeVariableChecker': true,
-    'validate': true,
-    'strictSemicolons': true,
-    'unstarredGenerators': true,
-    'ignoreNolint': true
-  } ? '' : '[=<true|false|parse>]';
-  var dashed = x.replace(/([A-Z])/g, '-$1').toLowerCase();
-  opts.push([dashed + (usage ? '::' : ''), x]);
-  if (usage)
-    longhelp1.push(['--' + dashed, descriptions[x] || usage]);
-  else if (!descriptions[x])
-    longhelp2.push(['--' + dashed, descriptions[x] || '']);
+var featurehelp = Object.keys(traceur.options).reduce(function(a, x) {
+  if (boolopts.indexOf(x) === -1) {
+    opts.push(x + '::');
+    a.push(['--' + dashCase(x), '[=<true|false|parse>]']);
+  }
+  return a;
+}, []);
+
+var boolhelp = boolopts.map(function(x) {
+  opts.push(x);
+  return ['--' + dashCase(x)];
 });
 
 function printOpt(x) {
@@ -81,15 +81,15 @@ function printOpt(x) {
 }
 
 console.log('main options:\n')
-help.forEach(printOpt);
+mainhelp.forEach(printOpt);
 
 console.log();
 console.log('feature options:\n')
-longhelp1.forEach(printOpt);
+featurehelp.forEach(printOpt);
 
 console.log();
 console.log('bool options:\n')
-longhelp2.forEach(printOpt);
+boolhelp.forEach(printOpt);
 
 console.log(opts);
 
