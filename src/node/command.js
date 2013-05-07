@@ -158,7 +158,6 @@ while (g.getopt(argv)) {
 if (errors) {
   process.exit(1);
 }
-process.exit(0);
 
 var includes = flags.args;
 
