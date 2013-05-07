@@ -134,7 +134,7 @@ while (g.getopt(argv)) {
       break;
     case '=':
       if (interpretMode || (dashdash = g.optarg === '--')) {
-        flags.args.push.apply(flags.args, argv.slice(g.optind + dashdash));
+        flags.args.push.apply(flags.args, argv.slice(g.optind - !dashdash));
         break loop;
       }
       flags.args.push(g.optarg);
