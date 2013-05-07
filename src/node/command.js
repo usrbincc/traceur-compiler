@@ -100,6 +100,14 @@ console.log();
 console.log('bool options:\n')
 boolhelp.forEach(printOpt);
 
+function printExamples() {
+  console.log('  Examples:');
+  console.log('');
+  console.log('    $ %s a.js [args]', cmdName);
+  console.log('    $ %s --out compiled.js b.js c.js', cmdName);
+  console.log('');
+};
+
 console.log(opts);
 
 var g = new Getopt(opts);
@@ -157,14 +165,6 @@ flags.option('--longhelp', 'Show all known options');
 flags.on('longhelp', function() {
   flags.help();
   process.exit();
-});
-
-flags.on('--help', function() {
-  console.log('  Examples:');
-  console.log('');
-  console.log('    $ %s a.js [args]', cmdName);
-  console.log('    $ %s --out compiled.js b.js c.js', cmdName);
-  console.log('');
 });
 
 traceur.options.addOptions(flags);
