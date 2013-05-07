@@ -133,7 +133,7 @@ while (g.getopt(argv)) {
       flags.out = g.optarg;
       break;
     case '=':
-      if (interpretMode || (dashdash = g.optarg === '--')) {
+      if ((dashdash = g.optarg === '--') || interpretMode) {
         flags.args.push.apply(flags.args, argv.slice(g.optind - !dashdash));
         break loop;
       }
