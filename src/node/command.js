@@ -69,7 +69,7 @@ Object.keys(traceur.options).forEach(function(x) {
 
 function printOpt(x) {
   var ind = 2;
-  var w = 20;
+  var w = 26;
   var shortOpt = x[2] ? x[2] + ',' : '';
   var s = sprintf('%*s%*s%*s', ind, '', -4, shortOpt, -w, x[0]);
   if (x[1] && s.length > ind + 4 + w) {
