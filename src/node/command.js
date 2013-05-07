@@ -72,10 +72,12 @@ function printOpt(x) {
   var w = 26;
   var shortOpt = x[2] ? x[2] + ',' : '';
   var s = sprintf('%*s%*s%*s', ind, '', -4, shortOpt, -w, x[0]);
-  if (x[1] && s.length > ind + 4 + w) {
-    s += sprintf('\n%*s  %s', ind + 4 + w, '', x[1]);
-  } else {
-    s += '  ' + x[1];
+  if (x[1]) {
+    if (s.length > ind + 4 + w) {
+      s += sprintf('\n%*s  %s', ind + 4 + w, '', x[1]);
+    } else {
+      s += '  ' + x[1];
+    }
   }
   console.log(s);
 }
