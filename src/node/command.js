@@ -81,16 +81,21 @@ function printOpt(x) {
   console.log(s);
 }
 
-console.log('main options:\n')
-mainhelp.forEach(printOpt);
+function printMainHelp() {
+  console.log('Options:\n')
+  mainhelp.forEach(printOpt);
+}
 
-console.log();
-console.log('feature options:\n')
-featurehelp.forEach(printOpt);
+function printLongHelp() {
+  printMainHelp();
+  console.log();
+  console.log('Feature options:\n')
+  featurehelp.forEach(printOpt);
 
-console.log();
-console.log('bool options:\n')
-boolhelp.forEach(printOpt);
+  console.log();
+  console.log('Bool options:\n')
+  boolhelp.forEach(printOpt);
+}
 
 function printExamples() {
   console.log('  Examples:');
@@ -117,10 +122,14 @@ while (g.getopt(argv)) {
   switch (g.opt) {
     case 'h':
     case 'help':
-      console.log('print help');
+      printMainHelp();
+      console.log();
+      printExamples();
       break loop;
     case 'longhelp':
-      console.log('print longhelp');
+      printLongHelp();
+      console.log();
+      printExamples();
       break loop;
     case 'o':
     case 'out':
