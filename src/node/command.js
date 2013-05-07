@@ -98,10 +98,10 @@ function printLongHelp() {
 }
 
 function printExamples() {
-  console.log('  Examples:');
+  console.log('Examples:');
   console.log('');
-  console.log('    $ %s a.js [args]', cmdName);
-  console.log('    $ %s --out compiled.js b.js c.js', cmdName);
+  console.log('  $ %s a.js [args]', cmdName);
+  console.log('  $ %s --out compiled.js b.js c.js', cmdName);
   console.log('');
 };
 
