@@ -103,12 +103,49 @@ boolhelp.forEach(printOpt);
 console.log(opts);
 
 var g = new Getopt(opts);
-while (g.getopt(process.argv)) {
-  if (g.optdata) {
-    console.log(g.optdata, traceur.options[g.optdata]);
+var f = Object.create(null);
+var interpretMode = true;
+var argv = process.argv;
+var dashdash =  false;
+
+console.log(argv);
+
+f.args = [];
+loop:
+while (g.getopt(argv)) {
+  switch (g.opt) {
+    case 'h':
+    case 'help':
+      console.log('print help');
+      break loop;
+    case 'longhelp':
+      console.log('print longhelp');
+      break loop;
+    case 'o':
+    case 'out':
+      interpretMode = false;
+      f.out = g.optarg;
+      break;
+    case '=':
+      if (interpretMode || (dashdash = g.optarg === '--')) {
+        f.args.push.apply(f.args, argv.slice(g.optind + dashdash));
+        break loop;
+      }
+      f.args.push(g.optarg);
+      break;
+    default:
+      if (g.optdata) {
+        traceur.options[g.optdata] = g.optarg === null ? true : g.optarg;
+        console.log(g.optdata, traceur.options[g.optdata]);
+      }
+      break;
+    case ':':
+    case '?':
+    case '!':
+      console.log(g.message());
   }
-  console.log(g.message());
 }
+console.log(f);
 process.exit(0);
 
 flags.option('--sourcemap', 'Generate source maps');
