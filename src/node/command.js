@@ -107,6 +107,7 @@ var flags = Object.create(null);
 var interpretMode = true;
 var argv = process.argv;
 var dashdash =  false;
+var errors = false;
 
 console.log(argv);
 
@@ -142,10 +143,15 @@ while (g.getopt(argv)) {
     case ':':
     case '?':
     case '!':
+      errors = true;
       console.log(g.message());
   }
 }
 console.log(flags);
+if (errors) {
+  console.log('had errors');
+  process.exit(1);
+}
 process.exit(0);
 
 var includes = flags.args;
