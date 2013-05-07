@@ -69,7 +69,7 @@ var boolhelp = boolopts.map(function(x) {
 
 function printOpt(x) {
   var ind = 2;
-  var w = 26;
+  var w = 25;
   var shortOpt = x[2] ? x[2] + ',' : '';
   var s = sprintf('%*s%*s%*s', ind, '', -4, shortOpt, -w, x[0]);
   if (x[1]) {
