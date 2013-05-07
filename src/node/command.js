@@ -139,6 +139,9 @@ while (g.getopt(argv)) {
       }
       flags.args.push(g.optarg);
       break;
+    case 'source-maps':
+      flags.sourceMaps = true;
+      // fall through
     default:
       if (g.optdata) {
         traceur.options[g.optdata] = g.optarg === null ? true : g.optarg;
