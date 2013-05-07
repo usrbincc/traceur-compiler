@@ -105,16 +105,12 @@ function printExamples() {
   console.log('');
 };
 
-console.log(opts);
-
 var g = new Getopt(opts);
 var flags = Object.create(null);
 var interpretMode = true;
 var argv = process.argv;
 var dashdash =  false;
 var errors = false;
-
-console.log(argv);
 
 flags.args = [];
 loop:
@@ -146,7 +142,6 @@ while (g.getopt(argv)) {
     default:
       if (g.optdata) {
         traceur.options[g.optdata] = g.optarg === null ? true : g.optarg;
-        console.log(g.optdata, traceur.options[g.optdata]);
       }
       break;
     case ':':
@@ -156,9 +151,8 @@ while (g.getopt(argv)) {
       console.log(g.message());
   }
 }
-console.log(flags);
+
 if (errors) {
-  console.log('had errors');
   process.exit(1);
 }
 process.exit(0);
