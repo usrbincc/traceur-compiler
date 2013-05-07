@@ -103,14 +103,14 @@ function printExamples() {
 console.log(opts);
 
 var g = new Getopt(opts);
-var f = Object.create(null);
+var flags = Object.create(null);
 var interpretMode = true;
 var argv = process.argv;
 var dashdash =  false;
 
 console.log(argv);
 
-f.args = [];
+flags.args = [];
 loop:
 while (g.getopt(argv)) {
   switch (g.opt) {
@@ -124,14 +124,14 @@ while (g.getopt(argv)) {
     case 'o':
     case 'out':
       interpretMode = false;
-      f.out = g.optarg;
+      flags.out = g.optarg;
       break;
     case '=':
       if (interpretMode || (dashdash = g.optarg === '--')) {
-        f.args.push.apply(f.args, argv.slice(g.optind + dashdash));
+        flags.args.push.apply(flags.args, argv.slice(g.optind + dashdash));
         break loop;
       }
-      f.args.push(g.optarg);
+      flags.args.push(g.optarg);
       break;
     default:
       if (g.optdata) {
@@ -145,7 +145,7 @@ while (g.getopt(argv)) {
       console.log(g.message());
   }
 }
-console.log(f);
+console.log(flags);
 process.exit(0);
 
 var includes = flags.args;
