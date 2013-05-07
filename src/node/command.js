@@ -56,16 +56,23 @@ function dashCase(s) {
 
 var featurehelp = Object.keys(traceur.options).reduce(function(a, x) {
   if (boolopts.indexOf(x) === -1) {
-    opts.push(x + '::');
-    a.push(['--' + dashCase(x), '[=<true|false|parse>]']);
+    var dx = dashCase(x);
+    opts.push([dx + '::', x]);
+    if (x !== 'experimental') {
+      a.push(['--' + dx, '[=<true|false|parse>]']);
+    }
   }
   return a;
 }, []);
 
-var boolhelp = boolopts.map(function(x) {
-  opts.push(x);
-  return ['--' + dashCase(x)];
-});
+var boolhelp = boolopts.reduce(function(a, x) {
+  var dx = dashCase(x);
+  opts.push([dx, x]);
+  if (x !== 'sourceMaps') {
+    a.push(['--' + dx]);
+  }
+  return a;
+}, []);
 
 function printOpt(x) {
   var ind = 2;
