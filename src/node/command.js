@@ -47,12 +47,13 @@ function dashCase(s) {
 }
 
 var featurehelp = Object.keys(traceur.options).reduce(function(a, x) {
+  if (x === 'experimental') {
+    return a;
+  }
   if (boolopts.indexOf(x) === -1) {
     var dx = dashCase(x);
     opts.push([dx + '::', x]);
-    if (x !== 'experimental') {
-      a.push(['--' + dx, '[=<true|false|parse>]']);
-    }
+    a.push(['--' + dx, '[=<true|false|parse>]']);
   }
   return a;
 }, []);
@@ -60,9 +61,10 @@ var featurehelp = Object.keys(traceur.options).reduce(function(a, x) {
 var boolhelp = boolopts.reduce(function(a, x) {
   var dx = dashCase(x);
   opts.push([dx, x]);
-  if (x !== 'sourceMaps') {
-    a.push(['--' + dx]);
+  if (x === 'sourceMaps') {
+    return a;
   }
+  a.push(['--' + dx]);
   return a;
 }, []);
 
