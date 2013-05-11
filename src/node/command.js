@@ -111,7 +111,7 @@ var g = new Getopt(opts);
 var flags = Object.create(null);
 var interpretMode = true;
 var argv = process.argv;
-var dashdash =  false;
+var dashdash = false;
 var errors = false;
 
 flags.args = [];
