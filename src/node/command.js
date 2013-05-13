@@ -165,8 +165,10 @@ var includes = flags.args;
 
 if (!includes.length) {
   // TODO: Start trepl
-  console.error('\n  Error: At least one input file is needed');
-  flags.help();
+  console.error('Error: At least one input file is needed\n');
+  printMainHelp();
+  console.log();
+  printExamples();
   process.exit(1);
 }
 
